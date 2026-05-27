@@ -6,10 +6,10 @@
 
 using namespace std;
 
-typedef vector<vector<double>> Matrix;
+typedef vector<vector<int>> Matrix;
 
-vector<vector<double>> readMatrix(const string& filename, int n) {
-    vector<vector<double>> mat(n, vector<double>(n));
+vector<vector<int>> readMatrix(const string& filename, int n) {
+    vector<vector<int>> mat(n, vector<int>(n));
     ifstream file(filename);
     for (int i = 0; i < n; ++i)
         for (int j = 0; j < n; ++j)
@@ -17,7 +17,7 @@ vector<vector<double>> readMatrix(const string& filename, int n) {
     return mat;
 }
 
-void save_matrix(const string& filename, const  vector<vector<double>>& mat, int n) {
+void save_matrix(const string& filename, const  vector<vector<int>>& mat, int n) {
     ofstream file(filename);
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j)
@@ -30,15 +30,16 @@ int main(int argc, char* argv[]) {
 
     int n = atoi(argv[1]);
 
-    vector<vector<double>> A = readMatrix("A.txt", n);
-    vector<vector<double>> B = readMatrix("B.txt", n);
-    vector<vector<double>> C(n, vector<double>(n, 0.0));
+    vector<vector<int>> A = readMatrix("A.txt", n);
+    vector<vector<int>> B = readMatrix("B.txt", n);
+    vector<vector<int>> C(n, vector<int>(n, 0.0));
 
     auto start = chrono::high_resolution_clock::now();
 
+    #pragma omp parallel for num_threads(8)
     for (int i = 0; i < n; ++i) {
         for (int k = 0; k < n; ++k) {
-            double temp = A[i][k];
+            int temp = A[i][k];
             for (int j = 0; j < n; ++j) {
                 C[i][j] += temp * B[k][j];
             }
